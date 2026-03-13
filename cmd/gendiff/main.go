@@ -1,7 +1,9 @@
 package main
 
 import (
+	"code/files"
 	"context"
+	"errors"
 	"log"
 	"os"
 
@@ -19,6 +21,20 @@ func main() {
 				Value:   "stylish",
 				Usage:   "output format",
 			},
+		},
+		Action: func(ctx context.Context, cmd *cli.Command) error {
+			file1 := cmd.Args().Get(0)
+			file2 := cmd.Args().Get(1)
+			if file2 == "" {
+				return errors.New("requires two arguments, but only one was passed")
+			}
+			if err := files.ParseFileContent(file1); err != nil {
+				return err
+			}
+			if err := files.ParseFileContent(file2); err != nil {
+				return err
+			}
+			return nil
 		},
 	}
 	if err := app.Run(context.Background(), os.Args); err != nil {
