@@ -1,9 +1,10 @@
 package main
 
 import (
-	"code/files"
+	"code/diff"
 	"context"
 	"errors"
+	"fmt"
 	"log"
 	"os"
 
@@ -25,15 +26,14 @@ func main() {
 		Action: func(ctx context.Context, cmd *cli.Command) error {
 			file1 := cmd.Args().Get(0)
 			file2 := cmd.Args().Get(1)
-			if file2 == "" {
-				return errors.New("requires two arguments, but only one was passed")
+			if file1 == "" || file2 == "" {
+				return errors.New("command requires two arguments")
 			}
-			if err := files.ParseFileContent(file1); err != nil {
+			result, err := diff.GenDiff(file1, file2)
+			if err != nil {
 				return err
 			}
-			if err := files.ParseFileContent(file2); err != nil {
-				return err
-			}
+			fmt.Println(result)
 			return nil
 		},
 	}
