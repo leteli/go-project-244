@@ -1,4 +1,4 @@
-name: ci
+name: check
 
 on:
   push:
@@ -22,6 +22,6 @@ jobs:
       - name: run tests
         run: make test
       - name: run Sonarqube scan
-        uses: SonarSource/sonarqube-scan-action
+        uses: SonarSource/sonarqube-scan-action@v7
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
