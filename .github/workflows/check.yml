@@ -18,7 +18,10 @@ jobs:
       - run: go mod download
 
       - name: run linter
-        run: make lint
+        uses: golangci/golangci-lint-action@v9
+        with:
+          version: v2.9
+
       - name: run tests
         run: make test
       - name: run Sonarqube scan
