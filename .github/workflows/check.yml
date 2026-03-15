@@ -22,8 +22,8 @@ jobs:
         with:
           version: v2.9
 
-      - name: run tests
-        run: make test
+      - name: run tests with coverage report
+        run: make test-coverage
       - name: run Sonarqube scan
         uses: SonarSource/sonarqube-scan-action@v7
         env:
