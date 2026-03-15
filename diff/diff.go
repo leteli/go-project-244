@@ -44,7 +44,7 @@ func GenDiff(path1, path2 string) (string, error) {
 	return getDiff(content1, content2), nil
 }
 
-func getSortedKeys(m1 map[string]any, m2 map[string]any) []string {
+func getSortedKeys(m1, m2 map[string]any) []string {
 	newMap := maps.Clone(m1)
 	maps.Copy(newMap, m2)
 	keys := slices.Collect(maps.Keys(newMap))
