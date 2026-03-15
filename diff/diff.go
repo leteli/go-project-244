@@ -1,7 +1,7 @@
 package diff
 
 import (
-	"encoding/json"
+	"code/parsers"
 	"fmt"
 	"maps"
 	"os"
@@ -9,51 +9,16 @@ import (
 	"strings"
 )
 
-func ParseFileContent(path string) (map[string]any, error) {
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return map[string]any{}, err
-	}
-	ext := getExtension(path)
-	switch ext {
-	case "json":
-		var parsed map[string]any
-		if err := json.Unmarshal(data, &parsed); err != nil {
-			return map[string]any{}, err
-		}
-		return parsed, nil
-	default:
-		return map[string]any{}, fmt.Errorf("unsupported file extension %s", ext)
-	}
-}
-
-func getExtension(path string) string {
-	dotIdx := strings.LastIndex(path, ".")
-	return path[dotIdx+1:]
-}
-
 func GenDiff(path1, path2 string) (string, error) {
-	content1, err := ParseFileContent(path1)
+	content1, err := parseFileContent(path1)
 	if err != nil {
 		return "", err
 	}
-	content2, err := ParseFileContent(path2)
+	content2, err := parseFileContent(path2)
 	if err != nil {
 		return "", err
 	}
 	return getDiff(content1, content2), nil
-}
-
-func getSortedKeys(m1, m2 map[string]any) []string {
-	newMap := maps.Clone(m1)
-	maps.Copy(newMap, m2)
-	keys := slices.Collect(maps.Keys(newMap))
-	slices.Sort(keys)
-	return keys
-}
-
-func getLine(key string, val any, prefix string) string {
-	return fmt.Sprintf(" %s %s: %v\n", prefix, key, val)
 }
 
 func getDiff(content1, content2 map[string]any) string {
@@ -78,4 +43,34 @@ func getDiff(content1, content2 map[string]any) string {
 	}
 	sb.WriteString("}")
 	return sb.String()
+}
+
+func getSortedKeys(m1, m2 map[string]any) []string {
+	newMap := maps.Clone(m1)
+	maps.Copy(newMap, m2)
+	keys := slices.Collect(maps.Keys(newMap))
+	slices.Sort(keys)
+	return keys
+}
+
+func getLine(key string, val any, prefix string) string {
+	return fmt.Sprintf(" %s %s: %v\n", prefix, key, val)
+}
+
+func parseFileContent(path string) (map[string]any, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return map[string]any{}, fmt.Errorf("error reading file %s: %w", path, err)
+	}
+	ext := getExtension(path)
+	result, err := parsers.Parse(data, ext)
+	if err != nil {
+		return map[string]any{}, fmt.Errorf("error parsing content of file %s: %w", path, err)
+	}
+	return result, nil
+}
+
+func getExtension(path string) string {
+	dotIdx := strings.LastIndex(path, ".")
+	return path[dotIdx+1:]
 }

@@ -18,10 +18,12 @@ func TestGenDiff(t *testing.T) {
 		wantPath string
 		wantErr  bool
 	}{
-		{name: "2 valid json configs", path1: filepath.Join(basePath, "file1.json"), path2: filepath.Join(basePath, "file2.json"), wantPath: filepath.Join(basePath, "file1_file2_json_result.txt"), wantErr: false},
+		{name: "2 valid json configs", path1: filepath.Join(basePath, "file1.json"), path2: filepath.Join(basePath, "file2.json"), wantPath: filepath.Join(basePath, "file1_file2_result.txt"), wantErr: false},
 		{name: "1 json with string only", path1: filepath.Join(basePath, "file1.json"), path2: filepath.Join(basePath, "string_only.json"), wantPath: "", wantErr: true},
 		{name: "1 invalid json", path1: filepath.Join(basePath, "file1.json"), path2: filepath.Join(basePath, "invalid.json"), wantPath: "", wantErr: true},
 		{name: "unsupported file extension", path1: filepath.Join(basePath, "file1.json"), path2: filepath.Join(basePath, "wrong_ext.txt"), wantPath: "", wantErr: true},
+		{name: "2 valid yaml configs", path1: filepath.Join(basePath, "file1.yml"), path2: filepath.Join(basePath, "file2.yaml"), wantPath: filepath.Join(basePath, "file1_file2_result.txt"), wantErr: false},
+		{name: "1 invalid yaml", path1: filepath.Join(basePath, "file1.yml"), path2: filepath.Join(basePath, "invalid.yml"), wantPath: "", wantErr: true},
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {

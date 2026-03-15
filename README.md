@@ -7,4 +7,4 @@
 ### Test coverage:
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=leteli_go-project-244&metric=coverage)](https://sonarcloud.io/summary/new_code?id=leteli_go-project-244)
 
-[![asciicast](https://asciinema.org/a/838105.svg)](https://asciinema.org/a/838105)
+[![asciicast](https://asciinema.org/a/E22ZlmdVrAfL639k.svg)](https://asciinema.org/a/E22ZlmdVrAfL639k)
