@@ -1,10 +1,14 @@
 package diff
 
 import (
+	f "code/formatters"
 	"code/parsers"
+	"code/types"
 	"fmt"
 	"maps"
 	"os"
+	"path/filepath"
+	"reflect"
 	"slices"
 	"strings"
 )
@@ -18,31 +22,34 @@ func GenDiff(path1, path2 string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return getDiff(content1, content2), nil
+	diff := BuildDiff(content1, content2)
+	return f.FormatDiff(diff, 1), nil
 }
 
-func getDiff(content1, content2 map[string]any) string {
+func BuildDiff(content1, content2 map[string]any) []types.Node {
 	sortedKeys := getSortedKeys(content1, content2)
-	var sb strings.Builder
-	sb.WriteString("{\n")
+	result := make([]types.Node, 0, len(sortedKeys))
 	for _, key := range sortedKeys {
 		val1, ok1 := content1[key]
 		val2, ok2 := content2[key]
 		if ok1 && ok2 {
-			if val1 == val2 {
-				sb.WriteString(getLine(key, val1, " "))
+			map1, isMap1 := val1.(map[string]any)
+			map2, isMap2 := val2.(map[string]any)
+			if isMap1 && isMap2 {
+				nested := BuildDiff(map1, map2)
+				result = append(result, types.Node{Key: key, Children: nested, Kind: types.Nested})
+			} else if reflect.DeepEqual(val1, val2) {
+				result = append(result, types.Node{Key: key, NewValue: val1, Kind: types.Unchanged})
 			} else {
-				sb.WriteString(getLine(key, val1, "-"))
-				sb.WriteString(getLine(key, val2, "+"))
+				result = append(result, types.Node{Key: key, OldValue: val1, NewValue: val2, Kind: types.Changed})
 			}
 		} else if ok1 {
-			sb.WriteString(getLine(key, val1, "-"))
+			result = append(result, types.Node{Key: key, OldValue: val1, Kind: types.Removed})
 		} else {
-			sb.WriteString(getLine(key, val2, "+"))
+			result = append(result, types.Node{Key: key, NewValue: val2, Kind: types.Added})
 		}
 	}
-	sb.WriteString("}")
-	return sb.String()
+	return result
 }
 
 func getSortedKeys(m1, m2 map[string]any) []string {
@@ -51,10 +58,6 @@ func getSortedKeys(m1, m2 map[string]any) []string {
 	keys := slices.Collect(maps.Keys(newMap))
 	slices.Sort(keys)
 	return keys
-}
-
-func getLine(key string, val any, prefix string) string {
-	return fmt.Sprintf(" %s %s: %v\n", prefix, key, val)
 }
 
 func parseFileContent(path string) (map[string]any, error) {
@@ -71,6 +74,9 @@ func parseFileContent(path string) (map[string]any, error) {
 }
 
 func getExtension(path string) string {
-	dotIdx := strings.LastIndex(path, ".")
-	return path[dotIdx+1:]
+	ext := filepath.Ext(path)
+	if ext == "" {
+		return ""
+	}
+	return strings.Replace(ext, ".", "", 1)
 }
