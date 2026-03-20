@@ -21,3 +21,8 @@ const (
 	BracketOffset = "bracketOffset"
 	MapOffset     = "mapOffset"
 )
+
+const (
+	Stylish = "stylish"
+	Plain   = "plain"
+)

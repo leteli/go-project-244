@@ -1,0 +1,5 @@
+{
+  "host": "hexlet.io",
+  "timeout": 100,
+  "allowedHosts": ["host.io", "hexlet.io"]
+}

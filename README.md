@@ -8,4 +8,5 @@
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=leteli_go-project-244&metric=coverage)](https://sonarcloud.io/summary/new_code?id=leteli_go-project-244)
 
 [![asciicast](https://asciinema.org/a/E22ZlmdVrAfL639k.svg)](https://asciinema.org/a/E22ZlmdVrAfL639k)
-[![asciicast](https://asciinema.org/a/6XbgDmRlfKY06RA8.svg)](https://asciinema.org/a/6XbgDmRlfKY06RA8)
+[![asciicast](https://asciinema.org/a/dao2IRidOETcf6AQ.svg)](https://asciinema.org/a/dao2IRidOETcf6AQ)
+[![asciicast](https://asciinema.org/a/1hchPbtRSTnlSDcU.svg)](https://asciinema.org/a/1hchPbtRSTnlSDcU)

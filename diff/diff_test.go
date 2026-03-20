@@ -12,26 +12,94 @@ import (
 
 func TestGenDiff(t *testing.T) {
 	basePath := filepath.Join("..", "testdata", "fixture")
+	flatPath := filepath.Join(basePath, "flat")
 	nestedPath := filepath.Join(basePath, "nested")
+	invalidPath := filepath.Join(basePath, "invalid")
 	cases := []struct {
 		name     string
 		path1    string
 		path2    string
+		format   string
 		wantPath string
 		wantErr  bool
 	}{
-		{name: "2 valid json configs", path1: filepath.Join(basePath, "file1.json"), path2: filepath.Join(basePath, "file2.json"), wantPath: filepath.Join(basePath, "file1_file2_result.txt"), wantErr: false},
-		{name: "1 json with string only", path1: filepath.Join(basePath, "file1.json"), path2: filepath.Join(basePath, "string_only.json"), wantPath: "", wantErr: true},
-		{name: "1 invalid json", path1: filepath.Join(basePath, "file1.json"), path2: filepath.Join(basePath, "invalid.json"), wantPath: "", wantErr: true},
-		{name: "unsupported file extension", path1: filepath.Join(basePath, "file1.json"), path2: filepath.Join(basePath, "wrong_ext.txt"), wantPath: "", wantErr: true},
-		{name: "2 valid yaml configs", path1: filepath.Join(basePath, "file1.yml"), path2: filepath.Join(basePath, "file2.yaml"), wantPath: filepath.Join(basePath, "file1_file2_result.txt"), wantErr: false},
-		{name: "1 invalid yaml", path1: filepath.Join(basePath, "file1.yml"), path2: filepath.Join(basePath, "invalid.yml"), wantPath: "", wantErr: true},
-		{name: "2 valid nested json configs", path1: filepath.Join(nestedPath, "file1.json"), path2: filepath.Join(nestedPath, "file2.json"), wantPath: filepath.Join(nestedPath, "file1_file2_result.txt"), wantErr: false},
-		{name: "2 valid nested yaml configs", path1: filepath.Join(nestedPath, "file1.yml"), path2: filepath.Join(nestedPath, "file2.yml"), wantPath: filepath.Join(nestedPath, "file1_file2_result.txt"), wantErr: false},
+		{
+			name:     "2 valid json configs",
+			path1:    filepath.Join(flatPath, "file1.json"),
+			path2:    filepath.Join(flatPath, "file2.json"),
+			format:   types.Stylish,
+			wantPath: filepath.Join(flatPath, "file1_file2_result.txt"),
+			wantErr:  false,
+		},
+		{
+			name:    "1 json with string only",
+			path1:   filepath.Join(flatPath, "file1.json"),
+			path2:   filepath.Join(invalidPath, "string_only.json"),
+			wantErr: true,
+		},
+		{
+			name:    "1 invalid json",
+			path1:   filepath.Join(flatPath, "file1.json"),
+			path2:   filepath.Join(invalidPath, "invalid.json"),
+			wantErr: true,
+		},
+		{
+			name:    "unsupported file extension",
+			path1:   filepath.Join(flatPath, "file1.json"),
+			path2:   filepath.Join(invalidPath, "wrong_ext.txt"),
+			wantErr: true,
+		},
+		{
+			name:     "2 valid yaml configs",
+			path1:    filepath.Join(flatPath, "file1.yml"),
+			path2:    filepath.Join(flatPath, "file2.yaml"),
+			format:   types.Stylish,
+			wantPath: filepath.Join(flatPath, "file1_file2_result.txt"),
+			wantErr:  false,
+		},
+		{
+			name:     "1 invalid yaml",
+			path1:    filepath.Join(flatPath, "file1.yml"),
+			path2:    filepath.Join(invalidPath, "invalid.yml"),
+			wantPath: "",
+			wantErr:  true,
+		},
+		{
+			name:     "2 valid nested json configs",
+			path1:    filepath.Join(nestedPath, "file1.json"),
+			path2:    filepath.Join(nestedPath, "file2.json"),
+			format:   types.Stylish,
+			wantPath: filepath.Join(nestedPath, "file1_file2_result.txt"),
+			wantErr:  false,
+		},
+		{
+			name:     "2 valid nested yaml configs",
+			path1:    filepath.Join(nestedPath, "file1.yml"),
+			path2:    filepath.Join(nestedPath, "file2.yml"),
+			format:   types.Stylish,
+			wantPath: filepath.Join(nestedPath, "file1_file2_result.txt"),
+			wantErr:  false,
+		},
+		{
+			name:     "2 valid json configs - plain",
+			path1:    filepath.Join(flatPath, "file1.json"),
+			path2:    filepath.Join(flatPath, "file2.json"),
+			format:   types.Plain,
+			wantPath: filepath.Join(flatPath, "file1_file2_result_plain.txt"),
+			wantErr:  false,
+		},
+		{
+			name:     "2 valid nested yaml configs - plain",
+			path1:    filepath.Join(nestedPath, "file1.yml"),
+			path2:    filepath.Join(nestedPath, "file2.yml"),
+			format:   types.Plain,
+			wantPath: filepath.Join(nestedPath, "file1_file2_result_plain.txt"),
+			wantErr:  false,
+		},
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			got, err := GenDiff(c.path1, c.path2)
+			got, err := GenDiff(c.path1, c.path2, c.format)
 			if !c.wantErr {
 				require.NoError(t, err)
 				want := getExpectedDiffContent(t, c.wantPath)

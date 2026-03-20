@@ -13,7 +13,7 @@ import (
 	"strings"
 )
 
-func GenDiff(path1, path2 string) (string, error) {
+func GenDiff(path1, path2, format string) (string, error) {
 	content1, err := parseFileContent(path1)
 	if err != nil {
 		return "", err
@@ -23,7 +23,7 @@ func GenDiff(path1, path2 string) (string, error) {
 		return "", err
 	}
 	diff := BuildDiff(content1, content2)
-	return f.FormatDiff(diff, 1), nil
+	return f.FormatDiff(diff, format), nil
 }
 
 func BuildDiff(content1, content2 map[string]any) []types.Node {
