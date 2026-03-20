@@ -2,22 +2,25 @@ package formatters
 
 import (
 	"code/types"
+	"encoding/json"
 	"fmt"
 	"maps"
 	"slices"
 	"strings"
 )
 
-func FormatDiff(diff []types.Node, format string) string {
+func FormatDiff(diff []types.Node, format string) (string, error) {
 	switch format {
 	case types.Plain:
-		return FormatPlainDiff(diff)
+		return FormatDiffPlain(diff), nil
+	case types.JSON:
+		return FormatDiffJSON(diff)
 	default:
-		return FormatStylishDiff(diff)
+		return FormatDiffStylish(diff), nil
 	}
 }
 
-func FormatStylishDiff(diff []types.Node) string {
+func FormatDiffStylish(diff []types.Node) string {
 	var level = 1
 	var inner func([]types.Node, int) string
 	inner = func(diff []types.Node, level int) string {
@@ -54,7 +57,7 @@ func FormatStylishDiff(diff []types.Node) string {
 	return inner(diff, level)
 }
 
-func FormatPlainDiff(diff []types.Node) string {
+func FormatDiffPlain(diff []types.Node) string {
 	var parentKey string
 	var inner func([]types.Node, string) string
 
@@ -98,9 +101,17 @@ func formatPlainValue(val any) string {
 		return fmt.Sprintf("%v", v)
 	}
 }
+
+func FormatDiffJSON(diff []types.Node) (string, error) {
+	if raw, err := json.Marshal(diff); err != nil {
+		return "", err
+	} else {
+		return string(raw), nil
+	}
+}
+
 func getPlainKey(parentKey, key string) string {
 	if parentKey == "" {
-		// return "'" + key + "'"
 		return key
 	}
 	return fmt.Sprintf("%s.%s", parentKey, key)

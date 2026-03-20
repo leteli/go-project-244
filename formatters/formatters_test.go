@@ -21,6 +21,7 @@ func TestFormatDiff(t *testing.T) {
 		{
 			Key:      "host",
 			Kind:     types.Unchanged,
+			OldValue: "hexlet.io",
 			NewValue: "hexlet.io",
 		},
 		{
@@ -178,24 +179,37 @@ func TestFormatDiff(t *testing.T) {
 			wantPath: filepath.Join(basePath, "flat", "file1_file2_result_plain.txt"),
 		},
 		{
-			name:     "nested diff - stylish",
+			name:     "flat diff - json",
+			diff:     flatDiff,
+			format:   types.JSON,
+			wantPath: filepath.Join(basePath, "flat", "file1_file2_result_json.json"),
+		},
+		{
+			name:     "nested diff stylish",
 			diff:     nestedDiff,
 			format:   types.Stylish,
 			wantPath: filepath.Join(basePath, "nested", "file1_file2_result.txt"),
 		},
 		{
-			name:     "nested diff - plain",
+			name:     "nested diff plain",
 			diff:     nestedDiff,
 			format:   types.Plain,
 			wantPath: filepath.Join(basePath, "nested", "file1_file2_result_plain.txt"),
+		},
+		{
+			name:     "nested diff json",
+			diff:     nestedDiff,
+			format:   types.JSON,
+			wantPath: filepath.Join(basePath, "nested", "file1_file2_result_json.json"),
 		},
 	}
 
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			got := FormatDiff(c.diff, c.format)
+			got, err := FormatDiff(c.diff, c.format)
 			want := getExpectedDiffContent(t, c.wantPath)
 			assert.Equal(t, want, got)
+			require.NoError(t, err)
 		})
 	}
 }

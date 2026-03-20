@@ -24,7 +24,7 @@ func TestGenDiff(t *testing.T) {
 		wantErr  bool
 	}{
 		{
-			name:     "2 valid json configs",
+			name:     "2 valid json format stylish",
 			path1:    filepath.Join(flatPath, "file1.json"),
 			path2:    filepath.Join(flatPath, "file2.json"),
 			format:   types.Stylish,
@@ -50,7 +50,7 @@ func TestGenDiff(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name:     "2 valid yaml configs",
+			name:     "valid yaml format stylish",
 			path1:    filepath.Join(flatPath, "file1.yml"),
 			path2:    filepath.Join(flatPath, "file2.yaml"),
 			format:   types.Stylish,
@@ -58,14 +58,22 @@ func TestGenDiff(t *testing.T) {
 			wantErr:  false,
 		},
 		{
-			name:     "1 invalid yaml",
+			name:     "valid json and yaml format stylish",
+			path1:    filepath.Join(flatPath, "file1.json"),
+			path2:    filepath.Join(flatPath, "file2.yaml"),
+			format:   types.Stylish,
+			wantPath: filepath.Join(flatPath, "file1_file2_result.txt"),
+			wantErr:  false,
+		},
+		{
+			name:     "invalid yaml",
 			path1:    filepath.Join(flatPath, "file1.yml"),
 			path2:    filepath.Join(invalidPath, "invalid.yml"),
 			wantPath: "",
 			wantErr:  true,
 		},
 		{
-			name:     "2 valid nested json configs",
+			name:     "valid nested json format stylish",
 			path1:    filepath.Join(nestedPath, "file1.json"),
 			path2:    filepath.Join(nestedPath, "file2.json"),
 			format:   types.Stylish,
@@ -73,7 +81,7 @@ func TestGenDiff(t *testing.T) {
 			wantErr:  false,
 		},
 		{
-			name:     "2 valid nested yaml configs",
+			name:     "valid nested yaml format stylish",
 			path1:    filepath.Join(nestedPath, "file1.yml"),
 			path2:    filepath.Join(nestedPath, "file2.yml"),
 			format:   types.Stylish,
@@ -81,7 +89,15 @@ func TestGenDiff(t *testing.T) {
 			wantErr:  false,
 		},
 		{
-			name:     "2 valid json configs - plain",
+			name:     "valid nested json and yaml format stylish",
+			path1:    filepath.Join(nestedPath, "file1.yml"),
+			path2:    filepath.Join(nestedPath, "file2.yml"),
+			format:   types.Stylish,
+			wantPath: filepath.Join(nestedPath, "file1_file2_result.txt"),
+			wantErr:  false,
+		},
+		{
+			name:     "valid json format plain",
 			path1:    filepath.Join(flatPath, "file1.json"),
 			path2:    filepath.Join(flatPath, "file2.json"),
 			format:   types.Plain,
@@ -89,11 +105,27 @@ func TestGenDiff(t *testing.T) {
 			wantErr:  false,
 		},
 		{
-			name:     "2 valid nested yaml configs - plain",
+			name:     "valid nested yaml format plain",
 			path1:    filepath.Join(nestedPath, "file1.yml"),
 			path2:    filepath.Join(nestedPath, "file2.yml"),
 			format:   types.Plain,
 			wantPath: filepath.Join(nestedPath, "file1_file2_result_plain.txt"),
+			wantErr:  false,
+		},
+		{
+			name:     "valid yaml format json",
+			path1:    filepath.Join(flatPath, "file1.yml"),
+			path2:    filepath.Join(flatPath, "file2.yaml"),
+			format:   types.JSON,
+			wantPath: filepath.Join(flatPath, "file1_file2_result_json.json"),
+			wantErr:  false,
+		},
+		{
+			name:     "valid nested json and yaml format json",
+			path1:    filepath.Join(nestedPath, "file1.json"),
+			path2:    filepath.Join(nestedPath, "file2.yml"),
+			format:   types.JSON,
+			wantPath: filepath.Join(nestedPath, "file1_file2_result_json.json"),
 			wantErr:  false,
 		},
 	}
@@ -138,6 +170,7 @@ func TestBuildDiff(t *testing.T) {
 			{
 				Key:      "host",
 				Kind:     types.Unchanged,
+				OldValue: "hexlet.io",
 				NewValue: "hexlet.io",
 			},
 			{
@@ -186,6 +219,7 @@ func TestBuildDiff(t *testing.T) {
 						{
 							Key:      "setting1",
 							Kind:     types.Unchanged,
+							OldValue: "Value 1",
 							NewValue: "Value 1",
 						},
 						{

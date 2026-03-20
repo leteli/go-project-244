@@ -23,7 +23,7 @@ func GenDiff(path1, path2, format string) (string, error) {
 		return "", err
 	}
 	diff := BuildDiff(content1, content2)
-	return f.FormatDiff(diff, format), nil
+	return f.FormatDiff(diff, format)
 }
 
 func BuildDiff(content1, content2 map[string]any) []types.Node {
@@ -39,7 +39,7 @@ func BuildDiff(content1, content2 map[string]any) []types.Node {
 				nested := BuildDiff(map1, map2)
 				result = append(result, types.Node{Key: key, Children: nested, Kind: types.Nested})
 			} else if reflect.DeepEqual(val1, val2) {
-				result = append(result, types.Node{Key: key, NewValue: val1, Kind: types.Unchanged})
+				result = append(result, types.Node{Key: key, OldValue: val1, NewValue: val1, Kind: types.Unchanged})
 			} else {
 				result = append(result, types.Node{Key: key, OldValue: val1, NewValue: val2, Kind: types.Changed})
 			}
