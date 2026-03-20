@@ -18,7 +18,7 @@ func FormatDiff(diff []types.Node, format string) string {
 }
 
 func FormatStylishDiff(diff []types.Node) string {
-	var level int = 1
+	var level = 1
 	var inner func([]types.Node, int) string
 	inner = func(diff []types.Node, level int) string {
 		var sb strings.Builder
