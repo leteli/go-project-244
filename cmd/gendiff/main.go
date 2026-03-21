@@ -1,7 +1,7 @@
 package main
 
 import (
-	"code/diff"
+	"code"
 	"context"
 	"errors"
 	"fmt"
@@ -29,7 +29,7 @@ func main() {
 			if file1 == "" || file2 == "" {
 				return errors.New("command requires two arguments")
 			}
-			result, err := diff.GenDiff(file1, file2, cmd.String("format"))
+			result, err := code.GenDiff(file1, file2, cmd.String("format"))
 			if err != nil {
 				return err
 			}

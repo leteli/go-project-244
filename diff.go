@@ -1,4 +1,4 @@
-package diff
+package code
 
 import (
 	f "code/formatters"

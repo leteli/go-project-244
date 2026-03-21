@@ -1,4 +1,4 @@
-package diff
+package code
 
 import (
 	"code/types"
@@ -11,7 +11,7 @@ import (
 )
 
 func TestGenDiff(t *testing.T) {
-	basePath := filepath.Join("..", "testdata", "fixture")
+	basePath := filepath.Join("testdata", "fixture")
 	flatPath := filepath.Join(basePath, "flat")
 	nestedPath := filepath.Join(basePath, "nested")
 	invalidPath := filepath.Join(basePath, "invalid")
