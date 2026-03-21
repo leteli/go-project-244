@@ -9,14 +9,15 @@ import (
 	"strings"
 )
 
-func FormatDiff(diff []types.Node, format string) (string, error) {
+func FormatDiff(diff types.Node, format string) (string, error) {
+	diffValue := diff.Children
 	switch format {
 	case types.Plain:
-		return FormatDiffPlain(diff), nil
+		return FormatDiffPlain(diffValue), nil
 	case types.JSON:
 		return FormatDiffJSON(diff)
 	default:
-		return FormatDiffStylish(diff), nil
+		return FormatDiffStylish(diffValue), nil
 	}
 }
 
@@ -102,7 +103,7 @@ func formatPlainValue(val any) string {
 	}
 }
 
-func FormatDiffJSON(diff []types.Node) (string, error) {
+func FormatDiffJSON(diff types.Node) (string, error) {
 	if raw, err := json.Marshal(diff); err != nil {
 		return "", err
 	} else {

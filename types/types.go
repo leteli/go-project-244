@@ -2,8 +2,8 @@ package types
 
 type Node struct {
 	Key      string `json:"key"`
-	OldValue any    `json:"old_value"` // NB: maybe omitempty
-	NewValue any    `json:"new_value"` // NB: maybe omitempty
+	OldValue any    `json:"old_value,omitempty"`
+	NewValue any    `json:"new_value,omitempty"`
 	Children []Node `json:"children,omitempty"`
 	Kind     string `json:"kind"`
 }
@@ -14,6 +14,7 @@ const (
 	Changed   = "changed"
 	Unchanged = "unchanged"
 	Nested    = "nested"
+	Root      = "root"
 )
 
 const (

@@ -23,7 +23,8 @@ func GenDiff(path1, path2, format string) (string, error) {
 		return "", err
 	}
 	diff := BuildDiff(content1, content2)
-	return f.FormatDiff(diff, format)
+	root := addRootNode(diff)
+	return f.FormatDiff(root, format)
 }
 
 func BuildDiff(content1, content2 map[string]any) []types.Node {
@@ -50,6 +51,10 @@ func BuildDiff(content1, content2 map[string]any) []types.Node {
 		}
 	}
 	return result
+}
+
+func addRootNode(nodes []types.Node) types.Node {
+	return types.Node{Key: "", Kind: types.Root, Children: nodes}
 }
 
 func getSortedKeys(m1, m2 map[string]any) []string {

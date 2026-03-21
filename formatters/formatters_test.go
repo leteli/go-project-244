@@ -12,157 +12,163 @@ import (
 
 func TestFormatDiff(t *testing.T) {
 	basePath := filepath.Join("..", "testdata", "fixture")
-	flatDiff := []types.Node{
-		{
-			Key:      "follow",
-			Kind:     types.Removed,
-			OldValue: false,
-		},
-		{
-			Key:      "host",
-			Kind:     types.Unchanged,
-			OldValue: "hexlet.io",
-			NewValue: "hexlet.io",
-		},
-		{
-			Key:      "proxy",
-			Kind:     types.Removed,
-			OldValue: "123.234.53.22",
-		},
-		{
-			Key:      "timeout",
-			Kind:     types.Changed,
-			OldValue: 50.0,
-			NewValue: 20.0,
-		},
-		{
-			Key:      "verbose",
-			Kind:     types.Added,
-			NewValue: true,
+	flatDiff := types.Node{
+		Kind: types.Root,
+		Children: []types.Node{
+			{
+				Key:      "follow",
+				Kind:     types.Removed,
+				OldValue: false,
+			},
+			{
+				Key:      "host",
+				Kind:     types.Unchanged,
+				OldValue: "hexlet.io",
+				NewValue: "hexlet.io",
+			},
+			{
+				Key:      "proxy",
+				Kind:     types.Removed,
+				OldValue: "123.234.53.22",
+			},
+			{
+				Key:      "timeout",
+				Kind:     types.Changed,
+				OldValue: 50.0,
+				NewValue: 20.0,
+			},
+			{
+				Key:      "verbose",
+				Kind:     types.Added,
+				NewValue: true,
+			},
 		},
 	}
-	nestedDiff := []types.Node{
-		{
-			Key:  "common",
-			Kind: types.Nested,
-			Children: []types.Node{
-				{
-					Key:      "follow",
-					Kind:     types.Added,
-					NewValue: false,
-				},
-				{
-					Key:      "setting1",
-					Kind:     types.Unchanged,
-					OldValue: "Value 1",
-					NewValue: "Value 1",
-				},
-				{
-					Key:      "setting2",
-					Kind:     types.Removed,
-					OldValue: 200.0,
-				},
-				{
-					Key:      "setting3",
-					Kind:     types.Changed,
-					OldValue: true,
-					NewValue: nil,
-				},
-				{
-					Key:      "setting4",
-					Kind:     types.Added,
-					NewValue: "blah blah",
-				},
-				{
-					Key:  "setting5",
-					Kind: types.Added,
-					NewValue: map[string]any{
-						"key5": "value5",
+
+	nestedDiff := types.Node{
+		Kind: types.Root,
+		Children: []types.Node{
+			{
+				Key:  "common",
+				Kind: types.Nested,
+				Children: []types.Node{
+					{
+						Key:      "follow",
+						Kind:     types.Added,
+						NewValue: false,
 					},
-				},
-				{
-					Key:  "setting6",
-					Kind: types.Nested,
-					Children: []types.Node{
-						{
-							Key:  "doge",
-							Kind: types.Nested,
-							Children: []types.Node{
-								{
-									Key:      "wow",
-									Kind:     types.Changed,
-									OldValue: "",
-									NewValue: "so much",
+					{
+						Key:      "setting1",
+						Kind:     types.Unchanged,
+						OldValue: "Value 1",
+						NewValue: "Value 1",
+					},
+					{
+						Key:      "setting2",
+						Kind:     types.Removed,
+						OldValue: 200.0,
+					},
+					{
+						Key:      "setting3",
+						Kind:     types.Changed,
+						OldValue: true,
+						NewValue: nil,
+					},
+					{
+						Key:      "setting4",
+						Kind:     types.Added,
+						NewValue: "blah blah",
+					},
+					{
+						Key:  "setting5",
+						Kind: types.Added,
+						NewValue: map[string]any{
+							"key5": "value5",
+						},
+					},
+					{
+						Key:  "setting6",
+						Kind: types.Nested,
+						Children: []types.Node{
+							{
+								Key:  "doge",
+								Kind: types.Nested,
+								Children: []types.Node{
+									{
+										Key:      "wow",
+										Kind:     types.Changed,
+										OldValue: "",
+										NewValue: "so much",
+									},
 								},
 							},
-						},
-						{
-							Key:      "key",
-							Kind:     types.Unchanged,
-							OldValue: "value",
-							NewValue: "value",
-						},
-						{
-							Key:      "ops",
-							Kind:     types.Added,
-							NewValue: "vops",
+							{
+								Key:      "key",
+								Kind:     types.Unchanged,
+								OldValue: "value",
+								NewValue: "value",
+							},
+							{
+								Key:      "ops",
+								Kind:     types.Added,
+								NewValue: "vops",
+							},
 						},
 					},
 				},
 			},
-		},
-		{
-			Key:  "group1",
-			Kind: types.Nested,
-			Children: []types.Node{
-				{
-					Key:      "baz",
-					Kind:     types.Changed,
-					OldValue: "bas",
-					NewValue: "bars",
-				},
-				{
-					Key:      "foo",
-					Kind:     types.Unchanged,
-					OldValue: "bar",
-					NewValue: "bar",
-				},
-				{
-					Key:  "nest",
-					Kind: types.Changed,
-					OldValue: map[string]any{
-						"key": "value",
+			{
+				Key:  "group1",
+				Kind: types.Nested,
+				Children: []types.Node{
+					{
+						Key:      "baz",
+						Kind:     types.Changed,
+						OldValue: "bas",
+						NewValue: "bars",
 					},
-					NewValue: "str",
-				},
-			},
-		},
-		{
-			Key:  "group2",
-			Kind: types.Removed,
-			OldValue: map[string]any{
-				"abc": 12345.0,
-				"deep": map[string]any{
-					"id": 45.0,
-				},
-			},
-		},
-		{
-			Key:  "group3",
-			Kind: types.Added,
-			NewValue: map[string]any{
-				"deep": map[string]any{
-					"id": map[string]any{
-						"number": 45.0,
+					{
+						Key:      "foo",
+						Kind:     types.Unchanged,
+						OldValue: "bar",
+						NewValue: "bar",
+					},
+					{
+						Key:  "nest",
+						Kind: types.Changed,
+						OldValue: map[string]any{
+							"key": "value",
+						},
+						NewValue: "str",
 					},
 				},
-				"fee": 100500,
 			},
-		}}
+			{
+				Key:  "group2",
+				Kind: types.Removed,
+				OldValue: map[string]any{
+					"abc": 12345.0,
+					"deep": map[string]any{
+						"id": 45.0,
+					},
+				},
+			},
+			{
+				Key:  "group3",
+				Kind: types.Added,
+				NewValue: map[string]any{
+					"deep": map[string]any{
+						"id": map[string]any{
+							"number": 45.0,
+						},
+					},
+					"fee": 100500,
+				},
+			}}}
 
 	cases := []struct {
 		name     string
-		diff     []types.Node
+		diff     types.Node
 		format   string
 		wantPath string
 	}{
