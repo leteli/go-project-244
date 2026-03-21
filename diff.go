@@ -63,14 +63,30 @@ func getSortedKeys(m1, m2 map[string]any) []string {
 func parseFileContent(path string) (map[string]any, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
-		return map[string]any{}, fmt.Errorf("error reading file %s: %w", path, err)
+		return nil, fmt.Errorf("error reading file %s: %w", path, err)
 	}
 	ext := getExtension(path)
 	result, err := parsers.Parse(data, ext)
 	if err != nil {
-		return map[string]any{}, fmt.Errorf("error parsing content of file %s: %w", path, err)
+		return nil, fmt.Errorf("error parsing content of file %s: %w", path, err)
 	}
-	return result, nil
+	var config map[string]any
+	switch val := result.(type) {
+	case map[string]any:
+		config = val
+	case []any:
+		if len(val) == 1 {
+			if _, isMap := val[0].(map[string]any); isMap {
+				return config, nil
+			}
+		}
+		return nil, fmt.Errorf("expected object, got an array of invalid format at %s", path)
+
+	default:
+		return nil, fmt.Errorf("expected object, got type %T at %s", val, path)
+	}
+
+	return config, nil
 }
 
 func getExtension(path string) string {
