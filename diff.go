@@ -5,12 +5,10 @@ import (
 	"code/parsers"
 	"code/types"
 	"fmt"
-	"maps"
 	"os"
 	"path/filepath"
 	"reflect"
 	"slices"
-	"strings"
 )
 
 func GenDiff(path1, path2, format string) (string, error) {
@@ -58,10 +56,15 @@ func addRootNode(nodes []types.Node) types.Node {
 }
 
 func getSortedKeys(m1, m2 map[string]any) []string {
-	newMap := maps.Clone(m1)
-	maps.Copy(newMap, m2)
-	keys := slices.Collect(maps.Keys(newMap))
+	keys := make([]string, 0, len(m1)+len(m2))
+	for k := range m1 {
+		keys = append(keys, k)
+	}
+	for k := range m2 {
+		keys = append(keys, k)
+	}
 	slices.Sort(keys)
+	keys = slices.Compact(keys)
 	return keys
 }
 
@@ -71,33 +74,17 @@ func parseFileContent(path string) (map[string]any, error) {
 		return nil, fmt.Errorf("error reading file %s: %w", path, err)
 	}
 	ext := getExtension(path)
-	result, err := parsers.Parse(data, ext)
+	config, err := parsers.Parse(data, ext)
 	if err != nil {
 		return nil, fmt.Errorf("error parsing content of file %s: %w", path, err)
 	}
-	var config map[string]any
-	switch val := result.(type) {
-	case map[string]any:
-		config = val
-	case []any:
-		if len(val) == 1 {
-			if _, isMap := val[0].(map[string]any); isMap {
-				return config, nil
-			}
-		}
-		return nil, fmt.Errorf("expected object, got an array of invalid format at %s", path)
-
-	default:
-		return nil, fmt.Errorf("expected object, got type %T at %s", val, path)
-	}
-
 	return config, nil
 }
 
 func getExtension(path string) string {
 	ext := filepath.Ext(path)
-	if ext == "" {
+	if len(ext) <= 1 {
 		return ""
 	}
-	return strings.Replace(ext, ".", "", 1)
+	return ext[1:]
 }

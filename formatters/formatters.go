@@ -10,14 +10,13 @@ import (
 )
 
 func FormatDiff(diff types.Node, format string) (string, error) {
-	diffValue := diff.Children
 	switch format {
 	case types.Plain:
-		return FormatDiffPlain(diffValue), nil
+		return FormatDiffPlain(diff.Children), nil
 	case types.JSON:
 		return FormatDiffJSON(diff)
 	default:
-		return FormatDiffStylish(diffValue), nil
+		return FormatDiffStylish(diff.Children), nil
 	}
 }
 
@@ -32,23 +31,17 @@ func FormatDiffStylish(diff []types.Node) string {
 			sb.WriteString(lineOffset)
 			switch node.Kind {
 			case types.Nested:
-				val := inner(node.Children, level+1)
-				sb.WriteString(getLine(node.Key, val, "  "))
+				sb.WriteString(getLine(node.Key, inner(node.Children, level+1), "  "))
 			case types.Changed:
-				oldVal := formatValue(node.OldValue, level)
-				sb.WriteString(getLine(node.Key, oldVal, "- "))
+				sb.WriteString(getLine(node.Key, formatValue(node.OldValue, level), "- "))
 				sb.WriteString(lineOffset)
-				newVal := formatValue(node.NewValue, level)
-				sb.WriteString(getLine(node.Key, newVal, "+ "))
+				sb.WriteString(getLine(node.Key, formatValue(node.NewValue, level), "+ "))
 			case types.Added:
-				newVal := formatValue(node.NewValue, level)
-				sb.WriteString(getLine(node.Key, newVal, "+ "))
+				sb.WriteString(getLine(node.Key, formatValue(node.NewValue, level), "+ "))
 			case types.Removed:
-				oldVal := formatValue(node.OldValue, level)
-				sb.WriteString(getLine(node.Key, oldVal, "- "))
+				sb.WriteString(getLine(node.Key, formatValue(node.OldValue, level), "- "))
 			case types.Unchanged:
-				val := formatValue(node.NewValue, level)
-				sb.WriteString(getLine(node.Key, val, "  "))
+				sb.WriteString(getLine(node.Key, formatValue(node.NewValue, level), "  "))
 			}
 		}
 		sb.WriteString(getOffset(level, types.BracketOffset))
@@ -68,26 +61,18 @@ func FormatDiffPlain(diff []types.Node) string {
 			key := getPlainKey(parentKey, node.Key)
 			switch node.Kind {
 			case types.Nested:
-				res := inner(node.Children, key)
-				sb.WriteString(res)
+				sb.WriteString(inner(node.Children, key))
 			case types.Changed:
-				oldVal := formatPlainValue(node.OldValue)
-				newVal := formatPlainValue(node.NewValue)
-				line := fmt.Sprintf("Property '%s' was updated. From %s to %s\n", key, oldVal, newVal)
-				sb.WriteString(line)
+				sb.WriteString(fmt.Sprintf("Property '%s' was updated. From %s to %s\n", key, formatPlainValue(node.OldValue), formatPlainValue(node.NewValue)))
 			case types.Added:
-				val := formatPlainValue(node.NewValue)
-				line := fmt.Sprintf("Property '%s' was added with value: %s\n", key, val)
-				sb.WriteString(line)
+				sb.WriteString(fmt.Sprintf("Property '%s' was added with value: %s\n", key, formatPlainValue(node.NewValue)))
 			case types.Removed:
-				line := fmt.Sprintf("Property '%s' was removed\n", key)
-				sb.WriteString(line)
+				sb.WriteString(fmt.Sprintf("Property '%s' was removed\n", key))
 			}
 		}
 		return sb.String()
 	}
-	result := inner(diff, parentKey)
-	return strings.TrimSpace(result)
+	return strings.TrimSpace(inner(diff, parentKey))
 }
 
 func formatPlainValue(val any) string {
@@ -104,11 +89,11 @@ func formatPlainValue(val any) string {
 }
 
 func FormatDiffJSON(diff types.Node) (string, error) {
-	if raw, err := json.Marshal(diff); err != nil {
+	raw, err := json.Marshal(diff)
+	if err != nil {
 		return "", err
-	} else {
-		return string(raw), nil
 	}
+	return string(raw), nil
 }
 
 func getPlainKey(parentKey, key string) string {
@@ -127,7 +112,7 @@ func formatValue(val any, level int) string {
 	case nil:
 		return "null"
 	default:
-		return fmt.Sprintf("%v", val)
+		return fmt.Sprintf("%v", v)
 	}
 }
 
@@ -157,9 +142,8 @@ func stringifyMap(m map[string]any, level int) string {
 	slices.Sort(keys)
 	sb.WriteString("{\n")
 	for _, k := range keys {
-		v := formatValue(m[k], level)
 		sb.WriteString(getOffset(level, types.MapOffset))
-		sb.WriteString(getLine(k, v, ""))
+		sb.WriteString(getLine(k, formatValue(m[k], level), ""))
 	}
 	sb.WriteString(getOffset(level, types.BracketOffset))
 	sb.WriteString("}")

@@ -20,6 +20,9 @@ func TestParse(t *testing.T) {
 		{name: "valid yaml", data: []byte("name: Ann\nlastname: Smith\nage: 40\n"), f: "yml", want: map[string]any{"name": "Ann", "lastname": "Smith", "age": 40}, wantErr: false},
 		{name: "invalid yaml", data: []byte("name: Ann\nlastname"), f: "yml", want: map[string]any{}, wantErr: true},
 		{name: "unsupported format", data: []byte("name"), f: "txt", want: map[string]any{}, wantErr: true},
+		{name: "string only", data: []byte("name"), f: "json", want: map[string]any{}, wantErr: true},
+		{name: "json as array of invalid format", data: []byte(`["string", "one-more-string"]`), f: "json", want: map[string]any{}, wantErr: true},
+		{name: "json as array with object", data: []byte(`[{"name":"Ann","lastname":"Smith","age":40}]`), f: "json", want: map[string]any{"name": "Ann", "lastname": "Smith", "age": float64(40)}, wantErr: false},
 	}
 
 	for _, c := range cases {

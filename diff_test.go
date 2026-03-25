@@ -43,12 +43,13 @@ func TestGenDiff(t *testing.T) {
 			path2:   filepath.Join(invalidPath, "array_invalid.json"),
 			wantErr: true,
 		},
-		// {
-		// 	name:    "1 json as array with object",
-		// 	path1:   filepath.Join(flatPath, "file1.json"),
-		// 	path2:   filepath.Join(flatPath, "file2_in_array.json"),
-		// 	wantErr: false,
-		// },
+		{
+			name:     "1 json as array with object",
+			path1:    filepath.Join(flatPath, "file1.json"),
+			path2:    filepath.Join(flatPath, "file2_in_array.json"),
+			wantPath: filepath.Join(flatPath, "file1_file2_result.txt"),
+			wantErr:  false,
+		},
 		{
 			name:    "1 invalid json",
 			path1:   filepath.Join(flatPath, "file1.json"),

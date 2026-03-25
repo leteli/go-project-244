@@ -3,7 +3,6 @@ package main
 import (
 	"code"
 	"context"
-	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -24,12 +23,7 @@ func main() {
 			},
 		},
 		Action: func(ctx context.Context, cmd *cli.Command) error {
-			file1 := cmd.Args().Get(0)
-			file2 := cmd.Args().Get(1)
-			if file1 == "" || file2 == "" {
-				return errors.New("command requires two arguments")
-			}
-			result, err := code.GenDiff(file1, file2, cmd.String("format"))
+			result, err := code.GenDiff(cmd.Args().Get(0), cmd.Args().Get(1), cmd.String("format"))
 			if err != nil {
 				return err
 			}
