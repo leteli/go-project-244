@@ -63,11 +63,11 @@ func FormatDiffPlain(diff []types.Node) string {
 			case types.Nested:
 				sb.WriteString(inner(node.Children, key))
 			case types.Changed:
-				sb.WriteString(fmt.Sprintf("Property '%s' was updated. From %s to %s\n", key, formatPlainValue(node.OldValue), formatPlainValue(node.NewValue)))
+				fmt.Fprintf(&sb, "Property '%s' was updated. From %s to %s\n", key, formatPlainValue(node.OldValue), formatPlainValue(node.NewValue))
 			case types.Added:
-				sb.WriteString(fmt.Sprintf("Property '%s' was added with value: %s\n", key, formatPlainValue(node.NewValue)))
+				fmt.Fprintf(&sb, "Property '%s' was added with value: %s\n", key, formatPlainValue(node.NewValue))
 			case types.Removed:
-				sb.WriteString(fmt.Sprintf("Property '%s' was removed\n", key))
+				fmt.Fprintf(&sb, "Property '%s' was removed\n", key)
 			}
 		}
 		return sb.String()
